@@ -1,7 +1,8 @@
 import { ReactNode, createContext, useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../services/firebaseConnection";
+import { auth, db } from "../services/firebaseConnection";
 import { CarsProps } from "../pages/home/index";
+import { collection, getDocs } from "firebase/firestore";
 
 type AuthContextData = {
   signed: boolean;
@@ -66,6 +67,31 @@ function AuthProvider({ children }: AuthProviderProps) {
     };
   }, []);
 
+  useEffect(() => {
+    function loadCars() {
+      const carsRef = collection(db, "cars");
+
+      getDocs(carsRef).then((snapshot) => {
+        const listcars = [] as CartProps[];
+
+        snapshot.forEach((doc) => {
+          listcars.push({
+            uid: doc.id,
+            name: doc.data().name,
+            images: doc.data().images,
+            price: doc.data().price,
+            amount: doc.data().amount,
+            total: doc.data().total,
+          });
+        });
+
+        setCart(listcars);
+      });
+    }
+
+    loadCars();
+  }, []);
+
   function addItemCart(newCar: CarsProps) {
     const indexCar = cart.findIndex((item) => item.uid === newCar.id);
 
@@ -74,7 +100,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
       itemList[indexCar].amount = itemList[indexCar].amount + 1;
       itemList[indexCar].total =
-        itemList[indexCar].amount * Number(itemList[indexCar].price);
+        itemList[indexCar].amount * itemList[indexCar].price;
 
       setCart(itemList);
       return;
@@ -84,7 +110,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       price: Number(newCar.price),
       name: newCar.name,
       amount: 1,
-      total: Number(newCar.price),
+      total: newCar.price,
       images: [],
     };
 
