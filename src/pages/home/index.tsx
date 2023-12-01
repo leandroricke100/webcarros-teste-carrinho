@@ -149,7 +149,11 @@ export function Home() {
                   Ano {car.year} | {car.km} km
                 </span>
                 <strong className="text-black font-medium text-xl">
-                  R$ {car.price}
+                  R${" "}
+                  {car.price.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
                 </strong>
 
                 <button

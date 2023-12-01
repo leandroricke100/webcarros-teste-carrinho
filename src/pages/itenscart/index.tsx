@@ -1,10 +1,12 @@
 import { useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 
+import { IoMdAddCircle } from "react-icons/io";
+import { IoRemoveCircle } from "react-icons/io5";
 import { Container } from "../../components/container";
 
 export function ItemsCart() {
-  const { cart } = useContext(AuthContext);
+  const { cart, remomeItemCart, addItemCart, total } = useContext(AuthContext);
 
   return (
     <Container>
@@ -24,19 +26,25 @@ export function ItemsCart() {
           </div>
           <strong>R$ {item.price}</strong>
           <div className="flex items-center justify-center gap-3">
-            <button className="bg-slate-600 px-2 text-white font-medium flex items-center justify-center">
-              -
+            <button
+              onClick={() => remomeItemCart(item)}
+              className="bg-slate-600 rounded-full text-white font-medium flex items-center justify-center"
+            >
+              <IoRemoveCircle size={22} />
             </button>
             {item.amount}
-            <button className="bg-slate-600 px-2 text-white font-medium flex items-center justify-center">
-              +
+            <button
+              onClick={() => addItemCart(item)}
+              className="bg-slate-600 rounded-full text-white font-medium flex items-center justify-center"
+            >
+              <IoMdAddCircle size={22} />
             </button>
           </div>
           <strong className="float-right">Subtotal: {item?.total}</strong>
         </section>
       ))}
 
-      <p className="font-bold mt-4">Total: R$ 150.000,00</p>
+      <p className="font-bold mt-4">Total: R$ {total}</p>
     </Container>
   );
 }
