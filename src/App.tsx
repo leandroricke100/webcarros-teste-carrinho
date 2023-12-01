@@ -7,6 +7,7 @@ import { New } from "./pages/dashboard/new";
 import { Register } from "./pages/register";
 import { Login } from "./pages/login";
 import { Private } from "./routes/Private";
+import { ItemsCart } from "./pages/itenscart";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
             <New />
           </Private>
         ),
+      },
+      {
+        path: "/itemcart",
+        element: <ItemsCart />,
       },
     ],
   },

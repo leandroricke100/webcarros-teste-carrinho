@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Container } from "../../components/container";
 import { Link } from "react-router-dom";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import { BsCartPlus } from "react-icons/bs";
 import { db } from "../../services/firebaseConnection";
 import { CgSpinner } from "react-icons/cg";
+import { AuthContext } from "../../contexts/AuthContext";
 
-interface CarsProps {
+export interface CarsProps {
   id: string;
   name: string;
   year: string;
@@ -23,6 +25,7 @@ interface CarImageProps {
 }
 
 export function Home() {
+  const { addItemCart } = useContext(AuthContext);
   const [cars, setCars] = useState<CarsProps[]>([]);
   const [loadImages, setLoadImages] = useState<string[]>([]);
   const [input, setInput] = useState("");
@@ -94,6 +97,10 @@ export function Home() {
     setCars(listcars);
   }
 
+  function handleAddCartItem(car: CarsProps) {
+    addItemCart(car);
+  }
+
   return (
     <Container>
       <section className="bg-white p-4 rounded-lg w-full max-w-3xl mx-auto flex justify-center items-center gap-2">
@@ -117,23 +124,25 @@ export function Home() {
 
       <main className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {cars.map((car) => (
-          <Link key={car.id} to={`/car/${car.id}`}>
+          <div key={car.id}>
             <section className="w-full bg-white rounded-lg">
-              <div
-                className="w-full h-72 flex items-center justify-center rounded-lg bg-slate-200"
-                style={{
-                  display: loadImages.includes(car.id) ? "none" : "visible",
-                }}
-              >
-                <CgSpinner size={60} className="animate-spin " />
-              </div>
-              <img
-                className="w-full rounded-lg mb-2 max-h-72 hover:scale-105 transition-all"
-                src={car.images[0].url}
-                alt="carro"
-                onLoad={() => handleImageLoad(car.id)}
-              />
-              <p className="font-bold mt-1 mb-2 px-2">{car.name}</p>
+              <Link to={`/car/${car.id}`}>
+                <div
+                  className="w-full h-72 flex items-center justify-center rounded-lg bg-slate-200"
+                  style={{
+                    display: loadImages.includes(car.id) ? "none" : "visible",
+                  }}
+                >
+                  <CgSpinner size={60} className="animate-spin " />
+                </div>
+                <img
+                  className="w-full rounded-lg mb-2 max-h-72 hover:scale-105 transition-all"
+                  src={car.images[0].url}
+                  alt="carro"
+                  onLoad={() => handleImageLoad(car.id)}
+                />
+                <p className="font-bold mt-1 mb-2 px-2">{car.name}</p>
+              </Link>
 
               <div className="flex flex-col px-2">
                 <span className="text-zinc-500 mb-6">
@@ -142,6 +151,13 @@ export function Home() {
                 <strong className="text-black font-medium text-xl">
                   R$ {car.price}
                 </strong>
+
+                <button
+                  className="bg-red-600 p-1 hover:opacity-80 rounded flex items-center justify-center my-2"
+                  onClick={() => handleAddCartItem(car)}
+                >
+                  <BsCartPlus size={20} color="#fff" />
+                </button>
               </div>
 
               <div className="w-full h-px bg-slate-200 my-2"></div>
@@ -150,7 +166,7 @@ export function Home() {
                 <span className="text-zinc-500">{car.city}</span>
               </div>
             </section>
-          </Link>
+          </div>
         ))}
       </main>
     </Container>

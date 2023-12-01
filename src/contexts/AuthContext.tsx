@@ -1,17 +1,36 @@
 import { ReactNode, createContext, useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../services/firebaseConnection";
-
-interface AuthProviderProps {
-  children: ReactNode;
-}
+import { CarsProps } from "../pages/home/index";
 
 type AuthContextData = {
   signed: boolean;
   loadingAuth: boolean;
   handleInfoUser: ({ name, email, uid }: UserProps) => void;
   user: UserProps | null;
+  cartAmount: number;
+  cart: CartProps[];
+  addItemCart: (newCar: CarsProps) => void;
 };
+
+interface CartProps {
+  uid: string;
+  price: number;
+  name: string;
+  amount: number;
+  total: number;
+  images: ImagesCarProps[];
+}
+
+interface ImagesCarProps {
+  name: string;
+  uid: string;
+  url: string;
+}
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
 interface UserProps {
   uid: string;
@@ -24,6 +43,7 @@ export const AuthContext = createContext({} as AuthContextData);
 function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
+  const [cart, setCart] = useState<CartProps[]>([]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
@@ -46,6 +66,31 @@ function AuthProvider({ children }: AuthProviderProps) {
     };
   }, []);
 
+  function addItemCart(newCar: CarsProps) {
+    const indexCar = cart.findIndex((item) => item.uid === newCar.id);
+
+    if (indexCar !== -1) {
+      const itemList = cart;
+
+      itemList[indexCar].amount = itemList[indexCar].amount + 1;
+      itemList[indexCar].total =
+        itemList[indexCar].amount * Number(itemList[indexCar].price);
+
+      setCart(itemList);
+      return;
+    }
+    const data = {
+      uid: newCar.id,
+      price: Number(newCar.price),
+      name: newCar.name,
+      amount: 1,
+      total: Number(newCar.price),
+      images: [],
+    };
+
+    setCart((items) => [...items, data]);
+  }
+
   function handleInfoUser({ name, email, uid }: UserProps) {
     setUser({
       name,
@@ -61,6 +106,9 @@ function AuthProvider({ children }: AuthProviderProps) {
         loadingAuth,
         handleInfoUser,
         user,
+        cartAmount: cart.length,
+        addItemCart,
+        cart,
       }}
     >
       {children}
