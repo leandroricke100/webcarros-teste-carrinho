@@ -84,7 +84,6 @@ function AuthProvider({ children }: AuthProviderProps) {
             total: doc.data().total,
           });
         });
-
         setCart(listcars);
       });
     }
@@ -98,9 +97,9 @@ function AuthProvider({ children }: AuthProviderProps) {
     if (indexCar !== -1) {
       const itemList = cart;
 
-      itemList[indexCar].amount = itemList[indexCar].amount + 1;
+      itemList[indexCar].amount = Number(itemList[indexCar].amount) + 1;
       itemList[indexCar].total =
-        itemList[indexCar].amount * itemList[indexCar].price;
+        itemList[indexCar].amount * Number(itemList[indexCar].price);
 
       setCart(itemList);
       return;
@@ -110,7 +109,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       price: Number(newCar.price),
       name: newCar.name,
       amount: 1,
-      total: newCar.price,
+      total: Number(newCar.price),
       images: [],
     };
 

@@ -27,12 +27,12 @@ export function ItemsCart() {
             <button className="bg-slate-600 px-2 text-white font-medium flex items-center justify-center">
               -
             </button>
-            5
+            {item.amount}
             <button className="bg-slate-600 px-2 text-white font-medium flex items-center justify-center">
               +
             </button>
           </div>
-          <strong className="float-right">Subtotal: {item.total}</strong>
+          <strong className="float-right">Subtotal: {item?.total}</strong>
         </section>
       ))}
 

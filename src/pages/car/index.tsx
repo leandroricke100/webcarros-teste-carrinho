@@ -15,7 +15,7 @@ interface CarProps {
   km: string;
   description: string;
   created: string;
-  price: string | number;
+  price: number | string;
   owner: string;
   uid: string;
   whatsapp: string;

@@ -20,7 +20,7 @@ interface CarProps {
   id: string;
   name: string;
   year: string;
-  price: string;
+  price: number | string;
   city: string;
   km: string;
   images: ImageCarProps[];
@@ -61,7 +61,7 @@ export function Dashboard() {
             uid: doc.data().uid,
           });
         });
-
+        console.log(listcars);
         setCars(listcars);
       });
     }
