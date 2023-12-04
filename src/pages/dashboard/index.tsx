@@ -110,7 +110,13 @@ export function Dashboard() {
               <span className="text-zinc-500">
                 Ano {car.year} | {car.km} km
               </span>
-              <strong>R$ {car.price}</strong>
+              <strong>
+                R${" "}
+                {car.price.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </strong>
             </div>
 
             <div className=" w-full h-px bg-slate-200 my-2"></div>

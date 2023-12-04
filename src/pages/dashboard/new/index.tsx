@@ -126,6 +126,8 @@ export function New() {
       owner: user?.name,
       uid: user?.uid,
       images: carListImages,
+      amount: 0, // Definindo a propriedade amount como 0
+      total: 0,
     }).then(() => {
       toast.success("Carro cadastrado com sucesso!");
       reset();

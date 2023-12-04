@@ -3,19 +3,14 @@ import { AuthContext } from "../../contexts/AuthContext";
 import logoImg from "../../assets/logo.svg";
 import { Link } from "react-router-dom";
 import { FiUser, FiLogIn, FiShoppingCart } from "react-icons/fi";
-import { Home } from "../../pages/home";
 
 export function Header() {
   const { signed, loadingAuth, cartAmount } = useContext(AuthContext);
 
-  function refreshPage() {
-    Home();
-  }
-
   return (
     <div className="w-full flex items-center justify-center h-16 bg-white drop-shadow mb-4 ">
       <header className="flex w-full max-w-7xl items-center justify-between px-4 mx-auto ">
-        <Link to="/" onClick={refreshPage}>
+        <Link to="/">
           <img src={logoImg} alt="Logo do site" />
         </Link>
 
