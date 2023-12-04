@@ -12,7 +12,7 @@ export interface CarsProps {
   name: string;
   year: string;
   uid: string;
-  price: number | string;
+  price: number;
   city: string;
   km: string;
   images: CarImageProps[];

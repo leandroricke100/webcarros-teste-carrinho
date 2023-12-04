@@ -6,7 +6,7 @@ import { IoRemoveCircle } from "react-icons/io5";
 import { Container } from "../../components/container";
 import { Link } from "react-router-dom";
 
-interface CartItemProps {
+export interface CartItemProps {
   id: string;
   uid: string;
   price: number;

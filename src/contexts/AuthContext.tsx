@@ -7,7 +7,7 @@ type AuthContextData = {
   loadingAuth: boolean;
   handleInfoUser: ({ name, email, uid }: UserProps) => void;
   user: UserProps | null;
-  cartAmount: number | null;
+  cartAmount: number;
   cart: CartProps[];
   addItemCart: (newCar: CartProps) => void;
   //removeItemCart: (product: CartProps) => void;
@@ -19,8 +19,8 @@ interface CartProps {
   uid: string;
   price: number;
   name: string;
-  amount: number;
-  total: number;
+  amount?: number;
+  total?: number;
   images: ImagesCarProps[];
 }
 
