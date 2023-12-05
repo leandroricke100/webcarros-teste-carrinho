@@ -15,13 +15,9 @@ export interface CarsProps {
   price: number;
   city: string;
   km: string;
-  images: CarImageProps[];
-}
-
-interface CarImageProps {
-  name: string;
-  uid: string;
-  url: string;
+  amount: number;
+  total: number;
+  images: string;
 }
 
 export function Home() {
@@ -48,9 +44,11 @@ export function Home() {
           year: doc.data().year,
           km: doc.data().km,
           city: doc.data().city,
-          images: doc.data().images,
+          images: doc.data().images[0].url,
           price: doc.data().price,
           uid: doc.data().uid,
+          amount: doc.data().amount,
+          total: doc.data().total,
         });
       });
 
@@ -91,6 +89,8 @@ export function Home() {
         images: doc.data().images,
         price: doc.data().price,
         uid: doc.data().uid,
+        amount: doc.data().amount,
+        total: doc.data().total,
       });
     });
 
@@ -137,7 +137,7 @@ export function Home() {
                 </div>
                 <img
                   className="w-full rounded-lg mb-2 max-h-72 hover:scale-105 transition-all"
-                  src={car.images[0].url}
+                  src={car.images}
                   alt="carro"
                   onLoad={() => handleImageLoad(car.id)}
                 />

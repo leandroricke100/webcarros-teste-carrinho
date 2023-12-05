@@ -8,26 +8,20 @@ type AuthContextData = {
   handleInfoUser: ({ name, email, uid }: UserProps) => void;
   user: UserProps | null;
   cartAmount: number;
-  cart: CartProps[];
-  addItemCart: (newCar: CartProps) => void;
-  //removeItemCart: (product: CartProps) => void;
+  cart: CartItemProps[];
+  addItemCart: (newCar: CartItemProps) => void;
+  removeItemCart: (product: CartItemProps) => void;
   //total: string;
 };
 
-interface CartProps {
+interface CartItemProps {
   id: string;
   uid: string;
   price: number;
   name: string;
-  amount?: number;
-  total?: number;
-  images: ImagesCarProps[];
-}
-
-interface ImagesCarProps {
-  name: string;
-  uid: string;
-  url: string;
+  amount: number;
+  total: number;
+  images: string;
 }
 
 interface AuthProviderProps {
@@ -45,7 +39,7 @@ export const AuthContext = createContext({} as AuthContextData);
 function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
-  const [cart, setCart] = useState<CartProps[]>([]);
+  const [cart, setCart] = useState<CartItemProps[]>([]);
   //const [total, setTotal] = useState(" ");
 
   useEffect(() => {
@@ -69,53 +63,59 @@ function AuthProvider({ children }: AuthProviderProps) {
     };
   }, []);
 
-  function addItemCart(newCar: CartProps) {
-    const myCart = localStorage.getItem("@webCarrosCart");
+  useEffect(() => {
+    const myItem = localStorage.getItem("@webCarrosCart");
 
-    const saveCart = myCart ? JSON.parse(myCart) : [];
+    setCart(myItem ? JSON.parse(myItem) : []);
+  }, []);
 
-    const indexCar = saveCart.findIndex(
-      (item: CartProps) => item.id === newCar.id
-    );
+  function addItemCart(item: CartItemProps) {
+    const existingItem = cart.find((cartItem) => cartItem.id === item.id);
 
-    if (indexCar !== -1) {
-      saveCart[indexCar].amount += 1;
-      saveCart[indexCar].total =
-        saveCart[indexCar].amount * saveCart[indexCar].price;
-    } else {
-      const data = {
-        id: newCar.id,
-        price: Number(newCar.price),
-        name: newCar.name,
+    if (!existingItem) {
+      const newItem = {
+        ...item,
         amount: 1,
-        total: Number(newCar.price),
-        images: newCar.images[0].url,
       };
-      saveCart.push(data);
+
+      setCart([...cart, newItem]);
+      localStorage.setItem(
+        "@webCarrosCart",
+        JSON.stringify([...cart, newItem])
+      );
+    } else {
+      const updateCart = cart.map((cartItem) => {
+        if (cartItem.id === item.id) {
+          return {
+            ...cartItem,
+            amount: cartItem.amount + 1,
+            total: cartItem.amount * cartItem.price,
+          };
+        }
+
+        return cartItem;
+      });
+
+      setCart(updateCart);
+      localStorage.setItem("@webCarrosCart", JSON.stringify(updateCart));
     }
-    setCart(saveCart);
-    localStorage.setItem("@webCarrosCart", JSON.stringify(saveCart));
   }
 
-  // function removeItemCart(product: CartProps) {
-  //   const indexItem = cart.findIndex((item) => item.uid === product.uid);
+  function removeItemCart(item: CartItemProps) {
+    const removeAmount = cart.map((cartItem) => {
+      if (cartItem.id === item.id) {
+        if (cartItem.amount >= 1) {
+          return { ...cartItem, amount: cartItem.amount - 1 };
+        }
+      }
+      return cartItem;
+    });
 
-  //   if (cart[indexItem]?.amount > 1) {
-  //     const cartList = cart;
+    const removeItem = removeAmount.filter((cartItem) => cartItem.amount > 0);
 
-  //     cartList[indexItem].amount = cartList[indexItem].amount - 1;
-  //     cartList[indexItem].total =
-  //       cartList[indexItem].total - cartList[indexItem].price;
-
-  //     setCart(cartList);
-  //     totalResultPrice(cartList);
-  //     return;
-  //   }
-
-  //   const removeItem = cart.filter((item) => item.uid !== product.uid);
-  //   setCart(removeItem);
-  //   totalResultPrice(removeItem);
-  // }
+    setCart(removeItem);
+    localStorage.setItem("@webCarrosCart", JSON.stringify(removeItem));
+  }
 
   // function totalResultPrice(item: CartProps[]) {
   //   const myCart = item;
@@ -149,7 +149,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         user,
         cartAmount: cart.length,
         addItemCart,
-        //removeItemCart,
+        removeItemCart,
         cart,
         //total,
       }}
