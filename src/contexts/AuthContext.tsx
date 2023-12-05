@@ -11,7 +11,7 @@ type AuthContextData = {
   cart: CartItemProps[];
   addItemCart: (newCar: CartItemProps) => void;
   removeItemCart: (product: CartItemProps) => void;
-  //total: string;
+  total: string;
 };
 
 interface CartItemProps {
@@ -40,7 +40,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [cart, setCart] = useState<CartItemProps[]>([]);
-  //const [total, setTotal] = useState(" ");
+  const [total, setTotal] = useState(" ");
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
@@ -76,9 +76,11 @@ function AuthProvider({ children }: AuthProviderProps) {
       const newItem = {
         ...item,
         amount: 1,
+        total: item.price,
       };
 
       setCart([...cart, newItem]);
+      totalResultPrice([...cart, newItem]);
       localStorage.setItem(
         "@webCarrosCart",
         JSON.stringify([...cart, newItem])
@@ -89,7 +91,7 @@ function AuthProvider({ children }: AuthProviderProps) {
           return {
             ...cartItem,
             amount: cartItem.amount + 1,
-            total: cartItem.amount * cartItem.price,
+            total: (cartItem.amount + 1) * cartItem.price,
           };
         }
 
@@ -97,6 +99,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       });
 
       setCart(updateCart);
+      totalResultPrice(updateCart);
       localStorage.setItem("@webCarrosCart", JSON.stringify(updateCart));
     }
   }
@@ -105,7 +108,11 @@ function AuthProvider({ children }: AuthProviderProps) {
     const removeAmount = cart.map((cartItem) => {
       if (cartItem.id === item.id) {
         if (cartItem.amount >= 1) {
-          return { ...cartItem, amount: cartItem.amount - 1 };
+          return {
+            ...cartItem,
+            amount: cartItem.amount - 1,
+            total: cartItem.total - cartItem.price,
+          };
         }
       }
       return cartItem;
@@ -114,23 +121,24 @@ function AuthProvider({ children }: AuthProviderProps) {
     const removeItem = removeAmount.filter((cartItem) => cartItem.amount > 0);
 
     setCart(removeItem);
+    totalResultPrice(removeItem);
     localStorage.setItem("@webCarrosCart", JSON.stringify(removeItem));
   }
 
-  // function totalResultPrice(item: CartProps[]) {
-  //   const myCart = item;
+  function totalResultPrice(item: CartItemProps[]) {
+    const myCart = item;
 
-  //   const result = myCart.reduce((acc, obj) => {
-  //     return acc + obj.total;
-  //   }, 0);
+    const result = myCart.reduce((acc, obj) => {
+      return acc + obj.total;
+    }, 0);
 
-  //   const resultFormated = result.toLocaleString("pt-BR", {
-  //     style: "currency",
-  //     currency: "BRL",
-  //   });
+    const resultFormated = result.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
 
-  //   setTotal(resultFormated);
-  // }
+    setTotal(resultFormated);
+  }
 
   function handleInfoUser({ name, email, uid }: UserProps) {
     setUser({
@@ -151,7 +159,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         addItemCart,
         removeItemCart,
         cart,
-        //total,
+        total,
       }}
     >
       {children}

@@ -17,7 +17,7 @@ export interface CartItemProps {
 }
 
 export function ItemsCart() {
-  const { addItemCart, removeItemCart, cart } = useContext(AuthContext);
+  const { addItemCart, removeItemCart, cart, total } = useContext(AuthContext);
 
   function addCart(item: CartItemProps) {
     addItemCart(item);
@@ -44,13 +44,13 @@ export function ItemsCart() {
       {cart.map((item) => (
         <section
           key={item.id}
-          className="flex items-center justify-around bg-white p-1 rounded-lg"
+          //className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+          className="grid grid-cols-1 gap-6 bg-white p-2 rounded-lg mb-2 md:flex items-center justify-around"
         >
           <div className="flex items-center gap-4 ">
             <img className="w-28  rounded-lg" src={item.images} />
             <div className="flex flex-col items-center ">
               <h1 className="font-bold">{item.name}</h1>
-              <p>Ano 2021/2022</p>
             </div>
           </div>
           <strong>R$ {item.price}</strong>
@@ -79,9 +79,7 @@ export function ItemsCart() {
         </section>
       ))}
 
-      {cart.length !== 0 && (
-        <p className="font-bold mt-4">Total: R$ 150.000.00</p>
-      )}
+      {cart.length !== 0 && <p className="font-bold mt-4">Total: {total}</p>}
     </Container>
   );
 }
