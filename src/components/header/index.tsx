@@ -5,7 +5,16 @@ import { Link } from "react-router-dom";
 import { FiUser, FiLogIn, FiShoppingCart } from "react-icons/fi";
 
 export function Header() {
-  const { signed, loadingAuth, cartAmount } = useContext(AuthContext);
+  const { signed, loadingAuth, cartAmount, user } = useContext(AuthContext);
+
+  const getFirstName = (fullName: string | null | undefined) => {
+    if (fullName) {
+      const fisrtName = fullName.split(" ")[0];
+      return fisrtName;
+    }
+
+    return;
+  };
 
   return (
     <div className="w-full flex items-center justify-center h-16 bg-white drop-shadow mb-4 fixed">
@@ -26,8 +35,14 @@ export function Header() {
 
         {!loadingAuth && signed && (
           <Link to="/dashboard">
-            <div className="border-2 rounded-full p-1 border-gray-900">
+            <div className=" flex flex-col items-center rounded-full p-1 border-gray-900 ">
               <FiUser size={22} color="#000" />
+              <p>
+                Olá,{" "}
+                <span className="text-red-600 font-semibold">
+                  {getFirstName(user?.name)}
+                </span>
+              </p>
             </div>
           </Link>
         )}
